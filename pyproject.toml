@@ -1,0 +1,7 @@
+[project]
+name = "causal_conv1d_jax_ops"
+version = "0.1.0"
+
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
