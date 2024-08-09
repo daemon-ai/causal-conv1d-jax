@@ -15,7 +15,7 @@
         };
 
         python-with-packages = pkgs.python312.withPackages(ps: with ps; [
-          pipx
+        #   pipx
         ]);
 
         cudatoolkit = pkgs.cudaPackages_12_2.cudatoolkit;
@@ -26,6 +26,7 @@
             cmake
             gnumake
             python-with-packages
+            poetry
             cudatoolkit
             cudaPackages.cuda_cudart
         ];

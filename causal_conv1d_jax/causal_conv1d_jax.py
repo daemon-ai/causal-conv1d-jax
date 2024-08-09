@@ -13,13 +13,13 @@ from jax.interpreters import ad, batching, mlir, xla
 from jax.lib import xla_client
 from jaxlib.hlo_helpers import custom_call
 
-# If the GPU version exists, also register those
+# Import and register the CUDA extension
 try:
-    from . import causal_conv1d_jax_ops
+    import causal_conv1d_jax_cuda
 except ImportError:
-    causal_conv1d_jax_ops = None
+    causal_conv1d_jax_cuda = None
 else:
-    for _name, _value in causal_conv1d_jax_ops.registrations().items():
+    for _name, _value in causal_conv1d_jax_cuda.registrations().items():
         xla_client.register_custom_call_target(_name, _value, platform="gpu")
 
 #==============================================================================
@@ -134,7 +134,7 @@ def _causal_conv1d_fwd_lowering(ctx, x, weight, bias, args, *, platform="cpu"):
     if platform == "cpu":
         raise NotImplementedError(f"No CPU implementation!")
     elif platform == "gpu":
-        if causal_conv1d_jax_ops is None:
+        if causal_conv1d_jax_cuda is None:
             raise ValueError(
                 "The 'causal_conv1d' module was not compiled with CUDA support"
             )
@@ -145,7 +145,7 @@ def _causal_conv1d_fwd_lowering(ctx, x, weight, bias, args, *, platform="cpu"):
         w_c, w_width = np.prod(w_dims[1:]), 1
         out_bs, out_c, out_l = np.prod(out_shape[1:]), np.prod(out_shape[2:]), 1
         #print(x_bs, x_c, x_l, w_c, w_width, out_bs, out_c, out_l)
-        opaque = causal_conv1d_jax_ops.build_causal_conv1d_descriptor(
+        opaque = causal_conv1d_jax_cuda.build_causal_conv1d_descriptor(
             batch_size, dim, seqlen, width,
             x_bs, x_c, x_l,
             w_c, w_width,
@@ -194,7 +194,7 @@ def _causal_conv1d_bwd_lowering(ctx, grad_output, x, weight, bias, args, *, plat
     if platform == "cpu":
         raise NotImplementedError(f"No CPU implemetnation!")
     elif platform == "gpu":
-        if causal_conv1d_jax_ops is None:
+        if causal_conv1d_jax_cuda is None:
             raise ValueError(
                 "The 'causal_conv1d' module was not compiled with CUDA support"
             )
@@ -206,7 +206,7 @@ def _causal_conv1d_bwd_lowering(ctx, grad_output, x, weight, bias, args, *, plat
         out_bs, out_c, out_l = np.prod(out_shape[1:]), np.prod(out_shape[2:]), 1
         #print(x_bs, x_c, x_l, w_c, w_width, out_bs, out_c, out_l)
         # TODO: custom descriptor
-        opaque = causal_conv1d_jax_ops.build_causal_conv1d_descriptor(
+        opaque = causal_conv1d_jax_cuda.build_causal_conv1d_descriptor(
             batch_size, dim, seqlen, width,
             x_bs, x_c, x_l,
             w_c, w_width,

@@ -18,13 +18,13 @@ find_package(CUDAToolkit REQUIRED)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/csrc)
 include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
 
-# Add causal_conv1d_jax_ops module
+# Add causal_conv1d_jax_cuda module
 pybind11_add_module(
-  causal_conv1d_jax_ops
+  causal_conv1d_jax_cuda
   ${CMAKE_CURRENT_LIST_DIR}/csrc/kernels.cc.cu
-  ${CMAKE_CURRENT_LIST_DIR}/csrc/causal_conv1d_jax_ops.cc
+  ${CMAKE_CURRENT_LIST_DIR}/csrc/causal_conv1d_jax_cuda.cc
 )
 
-# Install the causal_conv1d_jax_ops module
-install(TARGETS causal_conv1d_jax_ops LIBRARY DESTINATION .)
-target_link_libraries(causal_conv1d_jax_ops PUBLIC cublas)
+# Install the causal_conv1d_jax_cuda module
+install(TARGETS causal_conv1d_jax_cuda LIBRARY DESTINATION .)
+target_link_libraries(causal_conv1d_jax_cuda PUBLIC cublas)

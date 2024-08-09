@@ -45,7 +45,7 @@ pybind11::dict Registrations() {
   return dict;
 }
 
-PYBIND11_MODULE(causal_conv1d_jax_ops, m) {
+PYBIND11_MODULE(causal_conv1d_jax_cuda, m) {
   m.def("registrations", &Registrations);
   m.def("build_causal_conv1d_descriptor",[](
     uint32_t batch_size, uint32_t dim, uint32_t seqlen, uint32_t width,
